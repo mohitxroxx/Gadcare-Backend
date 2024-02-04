@@ -185,4 +185,18 @@ app.post('/home',async(req,res)=>{
     res.status(500).json("internal server error occured while fetching data")
   }
 })
+app.post('/password',async(req,res)=>{
+  try {
+    const {email,newPassword}=req.body;
+    const currentUser=await user.findOne({email:email})
+    if(!currentUser)
+    return res.status(200).json("No record found for this email")
+    const hashed=await bcrypt.hash(newPassword, 10)
+    currentUser.password=hashed;
+    await currentUser.save()
+    res.status(200).json("Password changed successfully")
+  } catch (error) {
+    res.status(500).json("internal server error occured while updating password")
+  }
+})
 module.exports = app;
